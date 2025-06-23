@@ -1,34 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Schema Type Extractor</title>
+    <title>Dynamic JSON-LD Schema Detector</title>
     <style>
-        body { font-family: Arial; padding: 40px; background: #f4f4f4; }
-        .container { background: #fff; padding: 30px; border-radius: 8px; max-width: 600px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        input[type=text] { width: 100%; padding: 10px; margin-bottom: 10px; }
-        button { padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; }
-        ul { list-style: none; padding-left: 0; }
-        li { padding: 5px 0; }
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 900px; margin: auto; }
+        input[type="text"] { width: 80%; padding: 10px; font-size: 16px; }
+        button { padding: 10px 20px; font-size: 16px; }
+        .block-header {
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+        .block-content {
+            display: none;
+            background: #f4f4f4;
+            padding: 10px;
+            border-left: 4px solid #007BFF;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Schema Type Extractor</h2>
-        <form method="POST">
-            <input type="text" name="url" placeholder="Enter URL" value="{{ url }}" required>
-            <button type="submit">Extract</button>
-        </form>
-        {% if types %}
-            <h3>Schema types found:</h3>
-            <ul>
-                {% for t in types %}
-                    <li>✔️ {{ t }}</li>
-                {% endfor %}
-            </ul>
-        {% elif url %}
-            <p>No schema types found.</p>
-        {% endif %}
-    </div>
+    <h1>Detect JSON-LD Schema (Dynamic Pages)</h1>
+    <form method="post">
+        <input type="text" name="url" placeholder="Enter a URL" required>
+        <button type="submit">Detect</button>
+    </form>
+
+    {% if message %}
+        <h3>{{ message }}</h3>
+    {% endif %}
+
+    {% for block in blocks %}
+        <div class="block">
+            <div class="block-header" onclick="toggleBlock({{ loop.index0 }})">
+                {{ block.type }}
+            </div>
+            <div class="block-content" id="block-{{ loop.index0 }}">
+                {{ block.content }}
+            </div>
+        </div>
+    {% endfor %}
+
+    <script>
+        function toggleBlock(index) {
+            const el = document.getElementById(`block-${index}`);
+            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
 </body>
 </html>
